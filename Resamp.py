@@ -20,7 +20,7 @@ def loadfits(namefile):
     return datacube, hdr
 
 
-def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,order=1):
+def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,ReturnHDUList=False,order=1):
     """
     Interpolates Using ndimage and astropy.wcs for coordinate system.
     arg1 is the input data to be gridded, can be either a fits filename or an HDU
@@ -94,7 +94,11 @@ def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,order=
         rethdu=fits.PrimaryHDU()
         rethdu.data=resamp
         rethdu.header=hdr2
-        return rethdu
+        if ReturnHDUList:  
+            hdul = fits.HDUList([rethdu])
+            return hdul
+        else:
+            return rethdu
     else:
         return resamp
 
