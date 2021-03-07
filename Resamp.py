@@ -26,7 +26,9 @@ def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,Return
     arg1 is the input data to be gridded, can be either a fits filename or an HDU
     arg2 contains the reference hdr, can either be a fits filename or a header
     """
-
+    if (ReturnHDUList):
+        ReturnHDU=True
+    
     if (isinstance(arg1,str)):
         im1, hdr1 = loadfits(arg1)
     elif (isinstance(arg1,fits.hdu.image.PrimaryHDU)):
