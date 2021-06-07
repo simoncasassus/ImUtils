@@ -18,7 +18,7 @@ def loadfits(namefile):
 def trimhead(hdr1,DitchCRVAL3=True,Inplace=True):
 
     if Inplace:
-        dumhdr1=hdr
+        dumhdr1=hdr1
     else:
         dumhdr1=deepcopy(hdr1)
 
