@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 from astropy.io import fits
-
+from copy import deepcopy
 
 def loadfits(namefile):
 
@@ -15,65 +15,69 @@ def loadfits(namefile):
     
     return datacube, hdr
 
-def trimhead(hdr1,DitchCRVAL3=True):
-    
-    hdr1.pop('PC3_1', None)  
-    hdr1.pop('PC4_1', None)  
-    hdr1.pop('PC3_2', None)  
-    hdr1.pop('PC4_2', None)  
-    hdr1.pop('PC1_3', None)  
-    hdr1.pop('PC2_3', None)  
-    hdr1.pop('PC3_3', None)  
-    hdr1.pop('PC4_3', None)  
-    hdr1.pop('PC1_4', None)  
-    hdr1.pop('PC2_4', None)  
-    hdr1.pop('PC3_4', None)  
-    hdr1.pop('PC4_4', None)
-    hdr1.pop('PC03_01', None)
-    hdr1.pop('PC04_01', None)
-    hdr1.pop('PC03_02', None)
-    hdr1.pop('PC04_02', None)
-    hdr1.pop('PC01_03', None)
-    hdr1.pop('PC02_03', None)
-    hdr1.pop('PC03_03', None)
-    hdr1.pop('PC04_03', None)
-    hdr1.pop('PC01_04', None)
-    hdr1.pop('PC02_04', None)
-    hdr1.pop('PC03_04', None)
-    hdr1.pop('PC04_04', None)
+def trimhead(hdr1,DitchCRVAL3=True,Inplace=True):
+
+    if Inplace:
+        dumhdr1=hdr
+    else:
+        dumhdr1=deepcopy(hdr1)
+
+    dumhdr1.pop('NAXIS3', None)  
+    dumhdr1.pop('NAXIS4', None)  
+    dumhdr1['NAXIS']=2
+
+    dumhdr1.pop('PC3_1', None)  
+    dumhdr1.pop('PC4_1', None)  
+    dumhdr1.pop('PC3_2', None)  
+    dumhdr1.pop('PC4_2', None)  
+    dumhdr1.pop('PC1_3', None)  
+    dumhdr1.pop('PC2_3', None)  
+    dumhdr1.pop('PC3_3', None)  
+    dumhdr1.pop('PC4_3', None)  
+    dumhdr1.pop('PC1_4', None)  
+    dumhdr1.pop('PC2_4', None)  
+    dumhdr1.pop('PC3_4', None)  
+    dumhdr1.pop('PC4_4', None)
+    dumhdr1.pop('PC03_01', None)
+    dumhdr1.pop('PC04_01', None)
+    dumhdr1.pop('PC03_02', None)
+    dumhdr1.pop('PC04_02', None)
+    dumhdr1.pop('PC01_03', None)
+    dumhdr1.pop('PC02_03', None)
+    dumhdr1.pop('PC03_03', None)
+    dumhdr1.pop('PC04_03', None)
+    dumhdr1.pop('PC01_04', None)
+    dumhdr1.pop('PC02_04', None)
+    dumhdr1.pop('PC03_04', None)
+    dumhdr1.pop('PC04_04', None)
     
     if (DitchCRVAL3):
-        hdr1.pop('CTYPE3', None) 
-        hdr1.pop('CRVAL3', None) 
-        hdr1.pop('CDELT3', None) 
-        hdr1.pop('CRPIX3', None) 
-        hdr1.pop('CUNIT3', None)
+        dumhdr1.pop('CTYPE3', None) 
+        dumhdr1.pop('CRVAL3', None) 
+        dumhdr1.pop('CDELT3', None) 
+        dumhdr1.pop('CRPIX3', None) 
+        dumhdr1.pop('CUNIT3', None)
     
-    hdr1.pop('CTYPE4', None) 
-    hdr1.pop('CRVAL4', None) 
-    hdr1.pop('CDELT4', None) 
-    hdr1.pop('CRPIX4', None) 
-    hdr1.pop('CUNIT4', None) 
-    hdr1.pop('OBJECT', None)
-    hdr1.pop('PC01_01', None)
-    hdr1.pop('PC02_01', None)
-    hdr1.pop('PC01_02', None)
-    hdr1.pop('PC02_02', None)
-    hdr1.pop('HISTORY', None)
-    hdr1.pop('COMMENT', None)
-    
-    hdr1.pop('CROTA3', None)
-    hdr1.pop('CROTA4', None)
+    dumhdr1.pop('CTYPE4', None) 
+    dumhdr1.pop('CRVAL4', None) 
+    dumhdr1.pop('CDELT4', None) 
+    dumhdr1.pop('CRPIX4', None) 
+    dumhdr1.pop('CUNIT4', None) 
+    dumhdr1.pop('OBJECT', None)
+    dumhdr1.pop('PC01_01', None)
+    dumhdr1.pop('PC02_01', None)
+    dumhdr1.pop('PC01_02', None)
+    dumhdr1.pop('PC02_02', None)
+    dumhdr1.pop('HISTORY', None)
+    dumhdr1.pop('COMMENT', None)
+    dumhdr1.pop('CROTA3', None)
+    dumhdr1.pop('CROTA4', None)
+    dumhdr1.pop('', None) 
+    dumhdr1.pop('TELESCOP', None) 
+    dumhdr1.pop('LONPOLE', None) 
+    dumhdr1.pop('LATPOLE', None) 
 
-
-
-
-    hdr1.pop('', None) 
-    hdr1.pop('TELESCOP', None) 
-    hdr1.pop('LONPOLE', None) 
-    hdr1.pop('LATPOLE', None) 
-
-    return hdr1
+    return dumhdr1
 
 def slice0(indata,fileout=False,DitchCRVAL3=True,ReturnHDUList=False):
     if isinstance(indata,str):
