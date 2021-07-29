@@ -6,6 +6,7 @@ import numpy as np
 from scipy.ndimage import map_coordinates
 from astropy.io import fits
 from astropy.wcs import WCS
+from pprint import pprint 
 
 include_path='/home/simon/common/python/include/'
 sys.path.append(include_path)
@@ -28,7 +29,7 @@ def loadfits(namefile):
 
 
 
-def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,ReturnHDUList=False,order=1):
+def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,ReturnHDUList=False,order=1,Verbose=False):
     """
     Interpolates Using ndimage and astropy.wcs for coordinate system.
     arg1 is the input data to be gridded, can be either a fits filename or an HDU
@@ -82,8 +83,8 @@ def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,Return
     hdr1im=Cube2Im.trimhead(hdr1,Inplace=False)
     hdr2im=Cube2Im.trimhead(hdr2,Inplace=False)
 
-    from pprint import pprint 
-    pprint(hdr2im)
+    if Verbose:
+        pprint(hdr2im)
     
     w1 = WCS(hdr1im)
     w2 = WCS(hdr2im)
