@@ -29,7 +29,7 @@ def loadfits(namefile):
 
 
 
-def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,ReturnHDUList=False,order=1,Verbose=False,mode='nearest'):
+def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,ReturnHDUList=False,order=1,Verbose=False,mode='constant'):
     """
     Interpolates Using ndimage and astropy.wcs for coordinate system.
     arg1 is the input data to be gridded, can be either a fits filename or an HDU
