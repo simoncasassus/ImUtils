@@ -29,7 +29,7 @@ def loadfits(namefile):
 
 
 
-def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,ReturnHDUList=False,order=1,Verbose=False):
+def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,ReturnHDUList=False,order=1,Verbose=False,mode='nearest'):
     """
     Interpolates Using ndimage and astropy.wcs for coordinate system.
     arg1 is the input data to be gridded, can be either a fits filename or an HDU
@@ -115,11 +115,11 @@ def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,Return
         for k in list(range(nk)):
             print(" k= ",k)
             aplane=im1[k,:,:]
-            resamp_aplane = map_coordinates(aplane, [ll1s, kk1s],prefilter=False,order=order) #,order=1
+            resamp_aplane = map_coordinates(aplane, [ll1s, kk1s],prefilter=False,order=order,mode=mode) #,order=1
             resamp[k,:,:]=resamp_aplane
 
     else:
-        resamp = map_coordinates(im1, [ll1s, kk1s],prefilter=False,order=order) #,order=1
+        resamp = map_coordinates(im1, [ll1s, kk1s],prefilter=False,order=order,mode=mode) #,order=1
 
     
     resamp=np.nan_to_num(resamp)
