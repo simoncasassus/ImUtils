@@ -130,10 +130,13 @@ def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,Return
         hdr2['CRVAL3']=hdr2_CRVAL3
 
     if IsCube:
-        hdr2['CRVAL3']=hdr1['CRVAL3']
-        hdr2['NAXIS3']=hdr1['NAXIS3']
+        #hdr2.pop('NAXIS3',None)
+        hdr2.pop('EXTEND',None)
+        
+        #hdr2['NAXIS3']=hdr1['NAXIS3']
         hdr2['CRPIX3']=hdr1['CRPIX3']
         hdr2['CDELT3']=hdr1['CDELT3']
+        hdr2['CRVAL3']=hdr1['CRVAL3']
         
     if (fileout):
         
