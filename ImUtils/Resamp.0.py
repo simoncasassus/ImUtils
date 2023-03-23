@@ -6,14 +6,10 @@ import numpy as np
 from scipy.ndimage import map_coordinates
 from astropy.io import fits
 from astropy.wcs import WCS
-from pprint import pprint 
 
-include_path='/home/simon/common/python/include/'
-sys.path.append(include_path)
+from . import Cube2Im
 
-import ImUtils.Cube2Im as Cube2Im
-
-def loadfits(namefile):
+def loadfits(namefile,ReturnHDU=False):
 
     hdus=fits.open(namefile)
     if (isinstance(hdus,list)):
@@ -22,14 +18,13 @@ def loadfits(namefile):
         hdu=hdus
     datacube = hdu.data
     hdr = hdu.header
-    
-    return datacube, hdr
+    if ReturnHDU:
+        return datacube, hdr, hdu
+    else:
+        return datacube, hdr
 
 
-
-
-
-def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,ReturnHDUList=False,order=1,Verbose=False,mode='constant'):
+def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,ReturnHDUList=False,order=1):
     """
     Interpolates Using ndimage and astropy.wcs for coordinate system.
     arg1 is the input data to be gridded, can be either a fits filename or an HDU
@@ -39,31 +34,21 @@ def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,Return
         ReturnHDU=True
     
     if (isinstance(arg1,str)):
-        im1, hdr1 = loadfits(arg1)
+        im1, hdr1, hdu1 = loadfits(arg1,ReturnHDU=True)
     elif (isinstance(arg1,fits.hdu.image.PrimaryHDU)):
+        hdu1=fits.hdu.image.PrimaryHDU
         im1 = arg1.data
         hdr1 = arg1.header
     elif (isinstance(arg1,fits.hdu.hdulist.HDUList)):
         im1 = arg1[0].data
         hdr1 = arg1[0].header
+        hdu1=args1[0]
     else:
         sys.exit("not an recognized input format")
         
-
-    IsCube=False
-    if (len(im1.shape) > 2):
-        if (len(im1.shape) > 3):
-            im1=im1[0,:,:,:]
-        if (im1.shape[2]>1):
-            IsCube=True
-        else:
-            im1=im1[0,:,:]
-
-            
-
-        
+    
     if (isinstance(imagefile_2,str)):
-        im2, hdr2 = loadfits(imagefile_2)
+        im2, hdr2, hdu2 = loadfits(imagefile_2,ReturnHDU=True)
     else:
         hdr2=imagefile_2
 
@@ -77,19 +62,21 @@ def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,Return
         SetCRVAL3_2=True
         hdr2_CRVAL3=hdr2['CRVAL3']
         
-    #hdr1.pop('CRVAL3', None)  
-    #hdr2.pop('CRVAL3', None)  
-    
-    hdr1im=Cube2Im.trimhead(hdr1,Inplace=False)
-    hdr2im=Cube2Im.trimhead(hdr2,Inplace=False)
+    hdr1.pop('CRVAL3', None)  
+    hdr2.pop('CRVAL3', None)  
 
-    if Verbose:
-        pprint(hdr2im)
+    hdu1=Cube2Im.slice0(hdu1)
+    hdr1=hdu1.header
+    im1=hdu1.data
+    #print("hdr1",hdr1)
+    #sys.exit()
+        
+    hdu2=Cube2Im.slice0(hdu2)
+    hdr2=hdu2.header
+    im2=hdu2.data
     
-    w1 = WCS(hdr1im)
-    w2 = WCS(hdr2im)
-
-    
+    w1 = WCS(hdr1)
+    w2 = WCS(hdr2)
     
     n2x = hdr2['NAXIS1']
     n2y = hdr2['NAXIS2']
@@ -106,41 +93,18 @@ def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,Return
 
 
     im1=np.nan_to_num(im1)
-    
-    if IsCube:
-        print("im1.shape",im1.shape)
-        nk=im1.shape[0]
-        resamp=np.zeros((nk,n2y,n2x))
-        print("Resampling ... nk=",nk)
-        for k in list(range(nk)):
-            print(" k= ",k)
-            aplane=im1[k,:,:]
-            resamp_aplane = map_coordinates(aplane, [ll1s, kk1s],prefilter=False,order=order,mode=mode) #,order=1
-            resamp[k,:,:]=resamp_aplane
+  
+    resamp = map_coordinates(im1, [ll1s, kk1s],prefilter=False,order=order) #,order=1
 
-    else:
-        resamp = map_coordinates(im1, [ll1s, kk1s],prefilter=False,order=order,mode=mode) #,order=1
-
-    
     resamp=np.nan_to_num(resamp)
 
-    #if (SetCRVAL3_1):
-    #    hdr1['CRVAL3']=hdr1_CRVAL3
+    if (fileout):
+        fits.writeto(fileout,resamp, hdr2, overwrite=True)
+
+    if (SetCRVAL3_1):
+        hdr1['CRVAL3']=hdr1_CRVAL3
     if (SetCRVAL3_2):
         hdr2['CRVAL3']=hdr2_CRVAL3
-
-    if IsCube:
-        #hdr2.pop('NAXIS3',None)
-        hdr2.pop('EXTEND',None)
-        
-        #hdr2['NAXIS3']=hdr1['NAXIS3']
-        hdr2['CRPIX3']=hdr1['CRPIX3']
-        hdr2['CDELT3']=hdr1['CDELT3']
-        hdr2['CRVAL3']=hdr1['CRVAL3']
-        
-    if (fileout):
-        
-        fits.writeto(fileout,resamp, hdr2, overwrite=True)
 
 
     if ReturnHDU:
@@ -157,6 +121,5 @@ def gridding(arg1, imagefile_2,fileout=False,fullWCS=True,ReturnHDU=False,Return
 
 
     
-
 
 
