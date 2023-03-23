@@ -37,7 +37,6 @@ if __name__ == "__main__":
         install_requires=[ # Modify for current packages
             'astropy',
             'numpy',
-            'copy',
             'scipy'],
         python_requires='>=3.6',
     )
