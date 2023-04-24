@@ -1,17 +1,5 @@
-import sys
 import numpy as np
-import os
-import os.path
 from astropy.io import fits as pf
-
-include_path=os.environ['HOME']+'/common/python/include/'
-sys.path.append(include_path)
-
-
-
-
-
-
 
 def fixhead(filename,fileout=False,Verbose=False):
     im1 = pf.open(filename)[0].data
